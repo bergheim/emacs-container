@@ -1,7 +1,10 @@
 #!/bin/sh
 # entrypoint.sh: Start D-Bus and launch Emacs GUI
 
-[ -z "$DISPLAY" ] && echo "DISPLAY not set" && exit 1
+if [ -z "$DISPLAY" ] && [ -z "$WAYLAND_DISPLAY" ]; then
+  echo "Neither DISPLAY nor WAYLAND_DISPLAY is set"
+  exit 1
+fi
 
 # Export GPG_TTY for gpg-agent/pinentry communication
 export GPG_TTY=$(tty)
