@@ -1,9 +1,9 @@
-FROM alpine:3.22
+FROM alpine:3.22.1
 
 RUN apk update && apk add --no-cache \
-      emacs-x11 \
+      emacs-pgtk-nativecomp \
       zsh \
-      dbus-x11 \
+      dbus \
       fontconfig \
       ttf-dejavu \
       ripgrep \
