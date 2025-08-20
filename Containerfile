@@ -14,7 +14,7 @@ RUN apk update && apk add --no-cache \
     coreutils \
     curl \
     dbus \
-    emacs-pgtk-nativecomp \
+    emacs-x11-nativecomp \
     enchant2 \
     enchant2-dev \
     fd \
@@ -34,6 +34,8 @@ RUN apk update && apk add --no-cache \
     wayland-libs-client \
     wayland-libs-cursor \
     wget \
+    xauth \
+    xvfb \
     zsh
 
 # it's a good idea to set this to your current host user as this will enable better history location sharing. recenf etc)
