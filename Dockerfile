@@ -1,30 +1,42 @@
 FROM alpine:3.22.1
 
 RUN apk update && apk add --no-cache \
-      emacs-pgtk-nativecomp \
-      zsh \
-      dbus \
-      fontconfig \
-      ttf-dejavu \
-      ripgrep \
-      fd \
-      font-jetbrains-mono \
-      font-jetbrains-mono-nerd \
-      font-noto-emoji \
-      enchant2 \
-      hunspell \
-      hunspell-en \
-      aspell \
-      aspell-en \
-      enchant2-dev \
-      pkgconf \
-      build-base \
-      gnupg \
-      pinentry \
-      pinentry-tty
+    adwaita-fonts \
+    adwaita-fonts-mono \
+    adwaita-fonts-sans \
+    adwaita-icon-theme \
+    adwaita-icon-theme-dev \
+    adwaita-xfce-icon-theme \
+    aspell \
+    aspell-en \
+    breeze-cursors \
+    build-base \
+    dbus \
+    emacs-pgtk-nativecomp \
+    enchant2 \
+    enchant2-dev \
+    fd \
+    fontconfig \
+    font-jetbrains-mono-nerd \
+    font-noto-emoji \
+    gnupg \
+    hunspell \
+    hunspell-en \
+    mesa-dri-gallium \
+    pinentry \
+    pinentry-tty \
+    pkgconf \
+    ripgrep \
+    ttf-dejavu \
+    wayland-libs-client \
+    wayland-libs-cursor \
+    zsh
 
 # Create user 'user' with Zsh shell
-RUN adduser -D -h /home/tsb -s /bin/zsh tsb
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+RUN addgroup -g $GROUP_ID tsb && \
+    adduser -D -h /home/tsb -s /bin/zsh -u $USER_ID -G tsb tsb
 
 USER tsb
 ENV HOME /home/tsb
