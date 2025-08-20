@@ -11,6 +11,7 @@ RUN apk update && apk add --no-cache \
     aspell-en \
     breeze-cursors \
     build-base \
+    curl \
     dbus \
     emacs-pgtk-nativecomp \
     enchant2 \
@@ -19,6 +20,7 @@ RUN apk update && apk add --no-cache \
     fontconfig \
     font-jetbrains-mono-nerd \
     font-noto-emoji \
+    git \
     gnupg \
     hunspell \
     hunspell-en \
@@ -30,6 +32,7 @@ RUN apk update && apk add --no-cache \
     ttf-dejavu \
     wayland-libs-client \
     wayland-libs-cursor \
+    wget \
     zsh
 
 # Create user 'user' with Zsh shell
