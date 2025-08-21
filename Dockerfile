@@ -11,6 +11,7 @@ RUN apk update && apk add --no-cache \
     aspell-en \
     breeze-cursors \
     build-base \
+    coreutils \
     curl \
     dbus \
     emacs-pgtk-nativecomp \
@@ -50,6 +51,9 @@ RUN mkdir -p $HOME/.config/emacs && \
     mkdir -p $HOME/.gnupg && \
     echo "allow-loopback-pinentry" > $HOME/.gnupg/gpg-agent.conf && \
     chmod 700 $HOME/.gnupg
+
+# don't load elfeed, org, etc
+ENV EMACS_CONTAINER=1
 
 # ENTRYPOINT script for GUI launch
 COPY --chown=tsb:tsb entrypoint.sh $HOME/
