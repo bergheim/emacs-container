@@ -19,6 +19,7 @@ RUN apk update && apk add --no-cache \
     enchant2-dev \
     fd \
     fontconfig \
+    font-inter \
     font-jetbrains-mono-nerd \
     font-noto-emoji \
     git \
@@ -26,6 +27,7 @@ RUN apk update && apk add --no-cache \
     hunspell \
     hunspell-en \
     mesa-dri-gallium \
+    nerd-fonts-all \
     pinentry \
     pinentry-tty \
     pkgconf \
