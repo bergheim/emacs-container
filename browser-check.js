@@ -117,8 +117,8 @@ Examples:
         const entry = { type: msg.type(), text: msg.text() };
         results.console.push(entry);
         if (!wantJson) {
-          const prefix = msg.type() === 'error' ? '❌' :
-                        msg.type() === 'warning' ? '⚠️' : '📝';
+          const prefix = msg.type() === 'error' ? '[ERR]' :
+                        msg.type() === 'warning' ? '[WARN]' : '[LOG]';
           console.log(`${prefix} [console.${msg.type()}] ${msg.text()}`);
         }
       });
@@ -130,20 +130,20 @@ Examples:
         const entry = { message: err.message, stack: err.stack };
         results.errors.push(entry);
         if (!wantJson) {
-          console.log(`💥 [PAGE ERROR] ${err.message}`);
+          console.log(`[PAGE ERROR] ${err.message}`);
         }
       });
     }
 
     // Navigate
-    if (!wantJson) console.log(`🌐 Navigating to ${url}...`);
+    if (!wantJson) console.log(`Navigating to ${url}...`);
 
     try {
       await page.goto(url, { timeout, waitUntil: 'load' });
       results.success = true;
     } catch (navError) {
       results.navigationError = navError.message;
-      if (!wantJson) console.log(`❌ Navigation failed: ${navError.message}`);
+      if (!wantJson) console.log(`Navigation failed: ${navError.message}`);
     }
 
     // Wait for additional content
@@ -155,8 +155,8 @@ Examples:
     results.title = await page.title();
 
     if (wantDescribe && !wantJson) {
-      console.log(`\n📄 Page: ${results.title}`);
-      console.log(`   URL: ${page.url()}`);
+      console.log(`\nPage: ${results.title}`);
+      console.log(`URL: ${page.url()}`);
     }
 
     // Get snapshot (text content)
@@ -179,7 +179,7 @@ Examples:
       });
 
       if (!wantJson) {
-        console.log(`\n📝 Content preview:\n${results.snapshot.substring(0, 500)}...`);
+        console.log(`\nContent preview:\n${results.snapshot.substring(0, 500)}...`);
       }
     }
 
@@ -227,9 +227,9 @@ Examples:
       results.refs = refs;
 
       if (!wantJson) {
-        console.log(`\n🌳 ARIA tree${wantInteractive ? ' (interactive only)' : ''}:`);
+        console.log(`\nARIA tree${wantInteractive ? ' (interactive only)' : ''}:`);
         console.log(results.aria);
-        console.log(`\n📍 Refs: ${Object.keys(refs).length} interactive elements`);
+        console.log(`\nRefs: ${Object.keys(refs).length} interactive elements`);
       }
     }
 
@@ -238,7 +238,7 @@ Examples:
       const screenshotPath = output || 'screenshot.png';
       await page.screenshot({ path: screenshotPath, fullPage });
       results.screenshot = screenshotPath;
-      if (!wantJson) console.log(`📸 Screenshot saved: ${screenshotPath}`);
+      if (!wantJson) console.log(`Screenshot saved: ${screenshotPath}`);
     }
 
     // PDF
@@ -246,7 +246,7 @@ Examples:
       const pdfPath = output || 'page.pdf';
       await page.pdf({ path: pdfPath });
       results.pdf = pdfPath;
-      if (!wantJson) console.log(`📄 PDF saved: ${pdfPath}`);
+      if (!wantJson) console.log(`PDF saved: ${pdfPath}`);
     }
 
     await browser.close();
@@ -254,9 +254,9 @@ Examples:
     // Summary
     if (!wantJson) {
       if (results.console.length > 0 || results.errors.length > 0) {
-        console.log(`\n📊 Summary:`);
-        console.log(`   Console messages: ${results.console.length}`);
-        console.log(`   Page errors: ${results.errors.length}`);
+        console.log(`\nSummary:`);
+        console.log(`  Console messages: ${results.console.length}`);
+        console.log(`  Page errors: ${results.errors.length}`);
       }
     }
 
@@ -274,7 +274,7 @@ Examples:
     if (wantJson) {
       console.log(JSON.stringify(results, null, 2));
     } else {
-      console.error(`💥 Fatal error: ${err.message}`);
+      console.error(`Fatal error: ${err.message}`);
     }
     process.exit(2);
   } finally {

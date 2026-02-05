@@ -165,5 +165,4 @@ eza, zoxide, jq, yq, git...
    - Can be added later if needed
    - For now, use Playwright API directly for interactions
 
-3. *hadolint binary* - still wget'd (static binary, works on musl)
-   - Could switch to Alpine package if available
+3. *hadolint binary* - wget'd (static binary, not in Alpine repos)

@@ -222,7 +222,7 @@ Features:
 - JSON output for LLM parsing
 - Works on musl (Alpine) with system Chromium
 
-See ~test-alpine-playwright/browser-check.js~
+See ~browser-check.js~ in project root.
 
 *** Context reduction verified (blog.thomasbergheim.com)
 
