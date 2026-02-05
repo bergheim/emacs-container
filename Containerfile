@@ -1,7 +1,11 @@
-FROM cgr.dev/chainguard/wolfi-base:latest
+FROM alpine:edge
 
-# Wolfi uses glibc (not musl) - playwright/browser automation will work!
-# Package names may differ from Alpine - this is a best-effort port
+# Alpine uses musl libc - we use system Chromium with Playwright API
+# This gives us excellent package coverage AND browser automation
+
+# Skip Playwright's bundled browser - use system Chromium instead
+ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+ENV PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 RUN apk update && apk add --no-cache \
     autoconf \
@@ -13,24 +17,27 @@ RUN apk update && apk add --no-cache \
     coreutils \
     curl \
     dbus \
-    emacs \
+    emacs-pgtk-nativecomp \
     enchant2 \
+    entr \
     eza \
     fd \
     fontconfig \
     fzf \
     git \
-    glibc \
-    glibc-locale-en \
+    github-cli \
     gnupg \
-    gpg \
     go \
+    golangci-lint \
     gstreamer \
+    gum \
     hunspell \
     jq \
     just \
     mesa \
     ncurses \
+    ncurses-terminfo \
+    ncurses-terminfo-base \
     neovim \
     nodejs \
     npm \
@@ -38,41 +45,46 @@ RUN apk update && apk add --no-cache \
     pinentry \
     pkgconf \
     podman \
-    posix-libc-utils \
     python3 \
+    py3-pip \
     ripgrep \
     rust \
     rust-analyzer \
+    shellcheck \
     sqlite \
     sudo \
     tmux \
+    uv \
     wget \
     wl-clipboard \
+    yadm \
     yamllint \
     yq \
     zoxide \
-    zsh
+    zsh \
+    gopls \
+    # Tools that were manually installed in Wolfi
+    ansible-lint \
+    mise \
+    pnpm \
+    pre-commit \
+    ruff \
+    typescript \
+    # Chromium dependencies for headless operation
+    nss \
+    freetype \
+    harfbuzz \
+    ttf-freefont \
+    ca-certificates
 
-# Packages not in Wolfi - install via other means
-RUN wget -qO- https://github.com/cli/cli/releases/download/v2.67.0/gh_2.67.0_linux_amd64.tar.gz | tar xz -C /tmp && \
-    mv /tmp/gh_2.67.0_linux_amd64/bin/gh /usr/local/bin/ && \
-    wget -qO- https://github.com/charmbracelet/gum/releases/download/v0.14.5/gum_0.14.5_Linux_x86_64.tar.gz | tar xz -C /tmp && \
-    mv /tmp/gum_0.14.5_Linux_x86_64/gum /usr/local/bin/ && \
-    wget -qO- https://github.com/koalaman/shellcheck/releases/download/v0.10.0/shellcheck-v0.10.0.linux.x86_64.tar.xz | tar xJ -C /tmp && \
-    mv /tmp/shellcheck-v0.10.0/shellcheck /usr/local/bin/ && \
-    curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b /usr/local/bin && \
-    wget -qO /usr/local/bin/yadm https://github.com/yadm-dev/yadm/raw/master/yadm && chmod +x /usr/local/bin/yadm && \
-    wget -qO- https://eradman.com/entrproject/code/entr-5.7.tar.gz | tar xz -C /tmp && \
-    cd /tmp/entr-5.7 && ./configure && make install
-
-# npm global packages (language servers, browser automation, etc.)
+# npm global packages (language servers, etc.)
+# Note: agent-browser excluded - ships glibc binary, won't work on Alpine
+# Note: playwright included - works with system Chromium via executablePath
+# Note: typescript and pnpm now from apk
 RUN npm install -g \
     @biomejs/biome \
-    agent-browser \
     playwright \
     typescript-language-server \
-    typescript \
-    pnpm \
     vscode-langservers-extracted \
     bash-language-server \
     yaml-language-server \
@@ -96,9 +108,14 @@ RUN addgroup -g $GROUP_ID $USERNAME && \
 COPY e /usr/local/bin/e
 RUN chmod +x /usr/local/bin/e
 
-# hadolint (Dockerfile linter)
+# hadolint (Dockerfile linter) - static binary works on musl
 RUN wget -qO /usr/local/bin/hadolint https://github.com/hadolint/hadolint/releases/latest/download/hadolint-Linux-x86_64 && \
     chmod +x /usr/local/bin/hadolint
+
+# browser-check - Alpine-compatible browser automation CLI
+COPY browser-check.js /usr/local/lib/browser-check.js
+RUN printf '#!/bin/sh\nNODE_PATH=/usr/lib/node_modules exec node /usr/local/lib/browser-check.js "$@"\n' > /usr/local/bin/browser-check && \
+    chmod +x /usr/local/bin/browser-check
 
 USER $USERNAME
 ENV HOME=/home/$USERNAME
@@ -128,29 +145,17 @@ RUN curl -fsSL https://bun.sh/install | bash && \
     echo 'alias claude="claude --dangerously-skip-permissions"' >> $HOME/.zshrc.container && \
     echo 'alias gemini="gemini --yolo"' >> $HOME/.zshrc.container && \
     echo 'alias vi=nvim' >> $HOME/.zshrc.container && \
+    # Fallback TERM if tmux-direct not in terminfo
+    echo '[ -z "$TERMINFO" ] && [ ! -f "/usr/share/terminfo/t/tmux-direct" ] && export TERM=tmux-256color' >> $HOME/.zshrc.container && \
     curl -fsSL https://raw.githubusercontent.com/steveyegge/beads/main/scripts/install.sh | bash && \
     # tmux clipboard (OSC 52)
     echo 'set -s set-clipboard on' > $HOME/.tmux.conf && \
     echo 'set -s copy-command "wl-copy"' >> $HOME/.tmux.conf && \
-    # uv - fast Python package manager
-    curl -LsSf https://astral.sh/uv/install.sh | sh && \
-    # Python tools via uv
-    $HOME/.local/bin/uv tool install pre-commit && \
-    $HOME/.local/bin/uv tool install ruff && \
-    $HOME/.local/bin/uv tool install ansible-lint && \
-    $HOME/.local/bin/uv tool install ty && \
-    $HOME/.local/bin/uv tool install webctl && \
-    # Configure webctl to use system chromium headlessly
-    $HOME/.local/bin/webctl config set use_global_playwright true && \
-    $HOME/.local/bin/webctl config set browser_executable_path /usr/bin/chromium && \
-    $HOME/.local/bin/webctl config set default_mode unattended && \
-    # Playwright needs its own chromium for CLI (npx playwright screenshot/pdf)
-    npx playwright install chromium && \
-    # Go tools
-    go install golang.org/x/tools/gopls@latest && \
-    # mise (version manager)
-    curl https://mise.run | sh && \
-    echo 'eval "$(~/.local/bin/mise activate zsh)"' >> $HOME/.zshrc.container
+    # Python tools via uv (only ones not in apk)
+    # pre-commit, ruff, ansible-lint now from apk
+    uv tool install ty && \
+    # mise from apk, just need to activate it
+    echo 'eval "$(mise activate zsh)"' >> $HOME/.zshrc.container
 
 ENV EMACS_CONTAINER=1
 
