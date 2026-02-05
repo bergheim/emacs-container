@@ -2,7 +2,7 @@
 #+DATE: 2026-02-05
 #+STARTUP: overview
 
-* Project Status: COMPLETE - READY FOR USE
+* Project Status: COMPLETE - MERGED AS DEFAULT
 
 Alpine-based devcontainer is ready for testing. All browser automation
 capabilities verified working with system Chromium.
@@ -40,8 +40,9 @@ capabilities verified working with system Chromium.
 
 | File                                    | Purpose                          |
 |-----------------------------------------+----------------------------------|
-| Containerfile.alpine                    | Production Alpine image          |
-| test-alpine-playwright/browser-check.js | Browser automation CLI           |
+| Containerfile                           | Production Alpine image (default)|
+| Containerfile.wolfi                     | Backup Wolfi image (glibc)       |
+| browser-check.js                        | Browser automation CLI           |
 | test-alpine-playwright/Containerfile    | Minimal test image               |
 | test-alpine-playwright/Containerfile.full | Full test with all tools       |
 | test-alpine-playwright/test-context-reduction.sh | Verify 93% claim       |
@@ -57,18 +58,23 @@ podman build -f Containerfile.full -t alpine-browser-full .
 podman run --rm alpine-browser-full
 #+end_src
 
-** Production Image
+** Production Image (Alpine is now default)
 #+begin_src shell
-podman build -f Containerfile.alpine -t emacs-gui-alpine .
+podman build -t emacs-gui .
 #+end_src
 
 ** With custom user (recommended)
 #+begin_src shell
-podman build -f Containerfile.alpine \
+podman build \
   --build-arg USERNAME=$(whoami) \
   --build-arg USER_ID=$(id -u) \
   --build-arg GROUP_ID=$(id -g) \
-  -t emacs-gui-alpine .
+  -t emacs-gui .
+#+end_src
+
+** Wolfi backup (glibc, if needed)
+#+begin_src shell
+podman build -f Containerfile.wolfi -t emacs-gui-wolfi .
 #+end_src
 
 * Package Comparison
@@ -104,8 +110,8 @@ browser-check matches agent-browser's claimed 93% reduction.
 - [X] Verify all dev tools work (emacs, tmux, language servers)
 - [X] Test Claude CLI installation on Alpine
 - [X] Push to GitHub (PR #4)
-- [ ] Test jolo.py with Alpine image (run on host: ~podman tag emacs-gui-alpine localhost/emacs-gui:latest~)
-- [ ] Update main Containerfile to use Alpine (after jolo validation)
+- [X] Test jolo.py with Alpine image
+- [X] Make Alpine the default Containerfile
 - [ ] Consider adding click/fill commands to browser-check
 
 * Test Results (2026-02-05)

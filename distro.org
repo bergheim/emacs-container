@@ -96,8 +96,9 @@ With ~browser-check.js~, Alpine can do everything we need:
 - Console/error capture for autonomous debugging
 - Screenshots and PDFs
 
-*Recommended: Switch to Alpine*
-- Tiny base image (5MB vs 50MB Wolfi)
+*DONE: Switched to Alpine (2026-02-05)*
+- ~Containerfile~ is now Alpine edge (Emacs 30.2, Go 1.25, etc.)
+- ~Containerfile.wolfi~ kept as glibc backup
 - All dev tools via apk (gh, gum, shellcheck, entr, just, yadm, golangci-lint)
 - Browser automation works via browser-check
 
