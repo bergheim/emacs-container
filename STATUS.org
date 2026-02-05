@@ -103,8 +103,9 @@ browser-check matches agent-browser's claimed 93% reduction.
 - [X] Build and test full Alpine image
 - [X] Verify all dev tools work (emacs, tmux, language servers)
 - [X] Test Claude CLI installation on Alpine
-- [ ] Test jolo.py with Alpine image
-- [ ] Update main Containerfile to use Alpine (after validation)
+- [X] Push to GitHub (PR #4)
+- [ ] Test jolo.py with Alpine image (run on host: ~podman tag emacs-gui-alpine localhost/emacs-gui:latest~)
+- [ ] Update main Containerfile to use Alpine (after jolo validation)
 - [ ] Consider adding click/fill commands to browser-check
 
 * Test Results (2026-02-05)
