@@ -114,7 +114,7 @@ RUN wget -qO /usr/local/bin/hadolint https://github.com/hadolint/hadolint/releas
     chmod +x /usr/local/bin/hadolint
 
 # browser-check - Alpine-compatible browser automation CLI
-COPY test-alpine-playwright/browser-check.js /usr/local/lib/browser-check.js
+COPY browser-check.js /usr/local/lib/browser-check.js
 RUN printf '#!/bin/sh\nNODE_PATH=/usr/lib/node_modules exec node /usr/local/lib/browser-check.js "$@"\n' > /usr/local/bin/browser-check && \
     chmod +x /usr/local/bin/browser-check
 
