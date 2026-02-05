@@ -43,20 +43,10 @@ capabilities verified working with system Chromium.
 | Containerfile                           | Production Alpine image (default)|
 | Containerfile.wolfi                     | Backup Wolfi image (glibc)       |
 | browser-check.js                        | Browser automation CLI           |
-| test-alpine-playwright/Containerfile    | Minimal test image               |
-| test-alpine-playwright/Containerfile.full | Full test with all tools       |
-| test-alpine-playwright/test-context-reduction.sh | Verify 93% claim       |
 | distro.org                              | Research notes (updated)         |
 | browsers.org                            | Tool comparison (updated)        |
 
 * Build Commands
-
-** Test Image (minimal, for validation)
-#+begin_src shell
-cd test-alpine-playwright
-podman build -f Containerfile.full -t alpine-browser-full .
-podman run --rm alpine-browser-full
-#+end_src
 
 ** Production Image (Alpine is now default)
 #+begin_src shell
