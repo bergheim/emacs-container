@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "agent-browser": "^0.9.1",
-    "playwright": "^1.58.1"
-  }
-}
